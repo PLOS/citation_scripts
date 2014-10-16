@@ -52,25 +52,41 @@ def clean_json(json)
   end
 end
 
-def send_file(path)
-  path = File.absolute_path(path)
-  doi_enc = path.match(/\/([^\/]+)\.json$/)[1]
-  doi = doi_enc.gsub(/%2[Ff]/, '/')
-  doi_uri = encode_uri("http://dx.doi.org/#{doi}")
-  doi_uri_enc = URI.encode_www_form_component(doi_uri)
+def send_json(doi, json)
   return if BAD_DOIS.member?(doi)
-  return if ($client.head(BASE_URL, { uri: doi_uri }).status == 200)
-  json = MultiJson.load(File.open(path, 'r').read)
+  doi_uri = encode_uri("http://dx.doi.org/#{doi}")
+  return if ($client.head(BASE_URL, uri: doi_uri).status == 200)
   clean_json(json)
+  doi_uri_enc = URI.encode_www_form_component(doi_uri)
   response = $client.post("#{BASE_URL}?api_key=#{API_KEY}&uri=#{doi_uri_enc}",
-                         MultiJson.dump(json),
-                         { 'Content-Type' => 'application/json',
-                           'Accept' => 'application/json' })
+                          MultiJson.dump(json),
+                          'Content-Type' => 'application/json',
+                          'Accept' => 'application/json')
   if (response.status == 201)
     puts doi
   else
     puts "BAD DOI: #{doi}"
     $new_bad_dois.push(doi)
+  end
+end
+
+def send_file(path)
+  path = File.absolute_path(path)
+  md = path.match(%r{/(10.1371[^/]+)\.json$})
+  if md
+    # single file per item style
+    doi_enc = md[1]
+    doi = doi_enc.gsub(/%2[Ff]/, '/')
+    json = MultiJson.load(File.open(path, 'r').read)
+    send_json(doi, json)
+  else
+    # big JSON file style
+    json = MultiJson.load(File.open(path, 'r').read)
+    json.each do |item|
+      doi = item['doi']
+      data = item['result']
+      send_json(doi, data) if data
+    end
   end
 end
 
