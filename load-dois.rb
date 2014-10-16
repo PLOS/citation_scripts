@@ -35,21 +35,17 @@ def encode_uri(uri)
     URI.encode(uri)
   end
 end
- 
+
 def clean_json(json)
-  if json.is_a? Hash then
+  if json.is_a? Hash
     json.keys.each do |k|
       if (k == 'uri')
-        json[k] = 'urn:isbn:3-900051-07-0' if json[k] == '3900051070'
         json[k] = encode_uri(json[k])
-      elsif (k == 'accessed_at' && json[k] == '22013-07-11')
-        # hack to work around issue
-        json[k] = '2013-07-23'
       else
         clean_json(json[k])
       end
     end
-  elsif json.is_a? Array then
+  elsif json.is_a? Array
     json.each do |v|
       clean_json(v)
     end
