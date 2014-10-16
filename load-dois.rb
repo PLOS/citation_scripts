@@ -90,8 +90,10 @@ def send_file(path)
   end
 end
 
-if ARGV[0] then
-  send_file(ARGV[0])
+if ARGV.size > 0 then
+  ARGV.each do |path|
+    send_file(path)
+  end
 else
   Dir.glob('/home/egh/tmp/*.json').each do |path|
     send_file(path)
