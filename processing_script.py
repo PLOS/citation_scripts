@@ -5,13 +5,13 @@ from __future__ import division
 import json
 import traceback, sys
 from citation_retrieval import retrieval
-from rich_citation_validation import validate
+from citation_validation import validate
 # from email_alert import email, text
 
 DOIS_FILE = "20k_pone_dois.json"
-DB_FILE_PREFIX = "pone_dbs/pone_db_5000_to_16000_"
-N = 11000 # number of papers to test things out on.
-OFFSET = 5000 # where to start in the list of DOIs
+DB_FILE_PREFIX = "pone_dbs/pone_db_8000_to_9000_"
+N = 1000 # number of papers to test things out on.
+OFFSET = 8000 # where to start in the list of DOIs
 
 CACHING_INTERVAL = 500
 
@@ -28,7 +28,9 @@ try:
     papers_processed = 0
     uri_ratio = [0, 0]  # first number is the ratio for all references processed to this point; second is the number of references processed (as opposed to the papers processed).
 
-    text("Starting a run of " + str(N) + " papers.")
+    print "Results from this run will be deposited into " + DB_FILE_PREFIX + ". If that directory doesn't exist, fix that right now."
+
+    # text("Starting a run of " + str(N) + " papers.")
 
     while x < N-1:
         runlist = run_dois[x:x+CACHING_INTERVAL]
@@ -71,9 +73,10 @@ try:
 
 except:
     print "Whoops, code stopped because of an error!"
-    print "Somewhere around " + str(x) + " papers were attempted, with at least " + str(papers_processed) + " successfully processed."
+    e = "Somewhere around " + str(x) + " papers were attempted, with at least " + str(papers_processed) + " successfully processed."
+    print e
     # email('abecker@plos.org',
     #         "Code failed with error " + str(sys.exc_info()[0]) + "!",
-    #         "Somewhere around " + str(x) + " papers were attempted, with at least " + str(papers_processed) + " successfully processed. Error traceback follows: \n" + str(traceback.format_exc())
+    #         e + " Error traceback follows: \n" + str(traceback.format_exc())
     #         )
     raise

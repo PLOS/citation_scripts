@@ -6,7 +6,7 @@ import time
 import requests  # the only non-native dependency here
 
 
-BASE_URL='http://api.richcitations.org/v0/'
+BASE_URL='http://richcitations-api.herokuapp.com/v0/'
 PAPER_URL='%spaper'%(BASE_URL)
 DELAY = 2 # delay between API calls on a 202 status, in seconds
 GIVE_UP_202 = 2 # number of times to receive a 202 status before temporarily giving up
@@ -35,7 +35,11 @@ def retrieve(raw_doi, run_dois, retrying = False, index_list = None):
         replies_202 += 1
         time.sleep(DELAY)
     if response.status_code == 200:
-        parsed = json.loads(response.text)
+        try:
+            parsed = json.loads(response.text)
+        except ValueError:
+            print "Bad JSON returned! Let's just say that paper failed. Maybe we'll try it again later..."
+            return {"result":False, "doi":raw_doi}
         print "Rich citations retrieved for paper", i, "out of", n, "!"
         if retrying:
             run_dois.remove(raw_doi)
