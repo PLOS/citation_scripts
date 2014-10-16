@@ -26,11 +26,10 @@ API_KEY = '...'
 
 def encode_uri(uri)
   return nil if uri.nil?
-  
   # properly encode DOI URIs
-  if uri.match(/^http:\/\/dx.doi.org\//)
-    doi = uri.match(/^http:\/\/dx.doi.org\/(.*)$/)[1]
-    doi_enc = URI.encode_www_form_component(doi)
+  md = uri.match(%r{^http://dx.doi.org/(.*)$})
+  if md
+    doi_enc = URI.encode_www_form_component(md[1])
     "http://dx.doi.org/#{doi_enc}"
   else
     URI.encode(uri)
