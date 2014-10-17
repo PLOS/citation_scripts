@@ -22,7 +22,7 @@ $new_bad_dois = []
 
 $client = HTTPClient.new
 BASE_URL = 'http://api.richcitations.org/papers'
-API_KEY = '...'
+API_KEY = '429b20b4-03c3-4c7f-aca8-506433c3d909'
 
 def encode_uri(uri)
   return nil if uri.nil?

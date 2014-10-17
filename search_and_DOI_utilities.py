@@ -26,7 +26,7 @@ def plos_search(query, query_type = None, rows = 20, more_parameters = None, fq 
     Set by default to return only full documents that are research articles (almost always what you want).
     output: determines output type. Set to JSON by default, XML is also possible, along with a few others.
     '''
-    api_key = "s4ZVBmgJyfZPMpqyy3Gs" #for abecker@plos.org
+    api_key = "..."
 
     query_string = ""
     if query_type:
