@@ -4,7 +4,7 @@
 from __future__ import division
 import json
 import traceback, sys
-from citation_retrieval import retrieval
+from xml_parsing import parse_XML_list
 from citation_validation import validate
 # from email_alert import email, text
 
@@ -35,7 +35,7 @@ try:
 
     while x < N-1:
         runlist = run_dois[x:x+CACHING_INTERVAL]
-        rc_list = retrieval(runlist)
+        rc_list = parse_XML_list(runlist)
 
         print "Dumping data into file..."
         filename = DB_FILE_PREFIX + str(c) + ".json"
