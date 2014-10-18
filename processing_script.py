@@ -8,11 +8,11 @@ from citation_retrieval import retrieval
 from citation_validation import validate
 # from email_alert import email, text
 
-DOIS_FILE = "20k_pone_dois.json"
-DB_DIR = "pone_dbs/"
-DB_FILE_PREFIX = DB_DIR + "pone_db_12000_to_18000_"
-N = 6000 # number of papers to test things out on.
-OFFSET = 12000 # where to start in the list of DOIs
+DOIS_FILE = "pmed_dois.json"
+DB_DIR = "pmed_dbs/"
+DB_FILE_PREFIX = DB_DIR + "pmed_db_"
+N = 1200 # number of papers to process.
+OFFSET = 0 # where to start in the list of DOIs
 
 CACHING_INTERVAL = 500
 

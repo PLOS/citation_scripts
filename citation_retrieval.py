@@ -8,7 +8,7 @@ import requests  # the only non-native dependency here
 
 BASE_URL='http://xmlapi.richcitations.org/v0/'
 PAPER_URL='%spaper'%(BASE_URL)
-DELAY = 2 # delay between API calls on a 202 status, in seconds
+DELAY = 4 # delay between API calls on a non-200 status, in seconds
 GIVE_UP_202 = 2 # number of times to receive a 202 status before temporarily giving up
 ACTUALLY_GIVE_UP = 2 # number of times to repeat the cycle before truly giving up on a paper
 
@@ -47,6 +47,7 @@ def retrieve(raw_doi, run_dois, retrying = False, index_list = None):
     else:
         print response
         return {"result":False, "doi":raw_doi}
+        time.sleep(DELAY) # to give the APIs (ours, CrossRef's) some time before we hit them again when they're having problems.
 
 
 def retrieval(doi_list):
