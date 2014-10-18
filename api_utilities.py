@@ -66,7 +66,7 @@ def retrieve_info_from_uri(uri):
 
 def in_database_from_uri(uri):
     '''Does what it says on the tin.'''
-    if retrieve_info_by_uri(uri).status_code == 200:
+    if retrieve_info_from_uri(uri).status_code == 200:
         return True
     return False
 
@@ -75,7 +75,7 @@ def citations_from_uri(uri):
     Returns citations for the given URI, if it's a citing entity in the database.
     Otherwise, returns False.
     '''
-    r = retrieve_info_by_uri(uri)
+    r = retrieve_info_from_uri(uri)
     if r.status_code != 200:
         return False
     return json.loads(r.text)
