@@ -11,7 +11,7 @@ from citation_validation import validate
 DOIS_FILE = "pmed_dois.json"
 DB_DIR = "pmed_dbs/"
 DB_FILE_PREFIX = DB_DIR + "pmed_db_"
-N = 1200 # number of papers to process.
+N = 500 # number of papers to process.
 OFFSET = 0 # where to start in the list of DOIs
 
 CACHING_INTERVAL = 500
