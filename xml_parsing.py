@@ -22,7 +22,7 @@ ACTUALLY_GIVE_UP = 2 # number of times to repeat the cycle before truly giving u
 def parse_XML(raw_doi, run_dois, retrying = False, index_list = None):
     '''
     Sends a single DOI from a list of DOIs to the XML parsing API.
-    Don't call this function directly -- use retrieval() instead.
+    Don't call this function directly -- use parse_XML_list() instead.
     '''
     if index_list:
         i = index_list.index(raw_doi) + 1

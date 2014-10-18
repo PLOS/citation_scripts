@@ -4,7 +4,7 @@
 '''
 api_utilities.py
 
-Some super-basic utilities for getting useful information out of the rich citations API.
+Some super-basic utilities for getting useful information out of the read/write API.
 There aren't any utilities here for writing to the API, though there should be.
 '''
 
