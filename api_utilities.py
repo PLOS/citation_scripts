@@ -5,6 +5,7 @@
 api_utilities.py
 
 Some super-basic utilities for getting useful information out of the rich citations API.
+There aren't any utilities here for writing to the API, though there should be.
 '''
 
 import json
@@ -36,7 +37,7 @@ def retrieve_info(doi):
     url = BASE_URL + "papers?doi=" + quote_plus(doi)
     return requests.get(url)
 
-def in_database?(doi):
+def in_database(doi):
     '''Does what it says on the tin.'''
     if retrieve_info(doi).status_code == 200:
         return True
