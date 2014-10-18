@@ -53,3 +53,30 @@ def citations(doi):
         return False
     return json.loads(r.text)
 
+
+def retrieve_info_from_uri(uri):
+    '''
+    Retrieves infomation about a URI from the read-write API.
+    This does NOT process references from a paper that hasn't previously been processed.
+    It merely accesses the API for the database.
+    Don't call this directly; use one of the wrapper functions below.
+    '''
+    url = BASE_URL + "papers?uri=" + quote_plus(uri)
+    return requests.get(url)
+
+def in_database_from_uri(uri):
+    '''Does what it says on the tin.'''
+    if retrieve_info_from_uri(uri).status_code == 200:
+        return True
+    return False
+
+def citations_from_uri(uri):
+    '''
+    Returns citations for the given URI, if it's a citing entity in the database.
+    Otherwise, returns False.
+    '''
+    r = retrieve_info_from_uri(uri)
+    if r.status_code != 200:
+        return False
+    return json.loads(r.text)
+
