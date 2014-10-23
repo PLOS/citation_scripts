@@ -10,8 +10,13 @@ def make_group_tree(identifier,idtype='doi',level=0,maxlevel=2):
 
     Example:
     -------
+    import citationTrees
+    import api_utilities
+    import networkx as nx
+    import matplotlib.pyplot as plt
+    
     doi = api_utilities.randdoi()
-    G =  make_group_tree(doi)  # Use this script to make the network
+    G =  citationTrees.make_group_tree(doi)  # Use this script to make the network
     nx.draw(G,node_color=[G.node[node]['color'] for node in G]) # Draw the map; colors are included as node property
     plt.show()  # Need to run if not using interactive matplotlib
     '''
