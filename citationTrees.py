@@ -81,6 +81,3 @@ def make_group_tree(identifier,idtype='doi',level=0,maxlevel=2):
                 G=nx.compose(G,newG)
         
     return G
-
-
-
