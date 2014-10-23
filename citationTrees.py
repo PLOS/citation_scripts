@@ -50,11 +50,12 @@ def make_group_tree(identifier,idtype='doi',level=0,maxlevel=2):
             G.add_edge(ref['uri'],(identifier,i))
      
     # ADDING MORE LEVELS
-    #if level!=maxlevel:
-    #    for ref in d['references']:
-    #        uri = ref['uri']
-    #        newG = make_group_tree(uri,idtype='uri',level=level+1,maxlevel=maxlevel)
-    #        G=nx.compose(G,newG)
+    if level!=maxlevel:
+        for ref in d['references']:
+            if len(ref['citation_groups']) >= 2:
+                uri = ref['uri']
+                newG = make_group_tree(uri,idtype='uri',level=level+1,maxlevel=maxlevel)
+                G=nx.compose(G,newG)
         
     return G
 
