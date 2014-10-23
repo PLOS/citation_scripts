@@ -47,9 +47,9 @@ def make_group_tree(identifier,idtype='doi',level=0,maxlevel=2):
     for ref in d['references']:
         G.add_node(ref['uri'],color='blue')
         for i in ref['citation_groups']:
-            G.add_edge(ref['uri'],(identifier,i))
+            G.add_edge((identifier,i),ref['uri'])
      
-    # ADDING MORE LEVELS
+    # Add second level when reference is cited 2 or more times
     if level!=maxlevel:
         for ref in d['references']:
             if len(ref['citation_groups']) >= 2:
