@@ -10,7 +10,7 @@ xml_url_schema.py
 
 Utilities to go from DOI to the URL for the XML of the paper.
 Right now, this works for papers published by PLOS, PeerJ, eLife, and all OA content from Springer (including BMC).
-Next up: PMC and Bioline International
+Next up: PMC.
 '''
 
 

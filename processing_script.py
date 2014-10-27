@@ -8,13 +8,13 @@ from xml_parsing import parse_XML_list
 from citation_validation import validate
 # from email_alert import email, text
 
-DOIS_FILE = "pmed_dois.json"
-DB_DIR = "pmed_dbs/"
-DB_FILE_PREFIX = DB_DIR + "pmed_db_"
-N = 500 # number of papers to process.
+DOIS_FILE = "pntds_dois.json"
+DB_DIR = "pntds_dbs/"
+DB_FILE_PREFIX = DB_DIR + "pntds_db_"
+N = 100 # number of papers to process.
 OFFSET = 0 # where to start in the list of DOIs
 
-CACHING_INTERVAL = 500
+CACHING_INTERVAL = 100
 
 doifile = open(DOIS_FILE)
 dois = json.load(doifile)
@@ -63,13 +63,13 @@ try:
 
         c += 1
 
-        # if not c%4:
+        # if not c%1:
         #     text("Still working!" + update_string)
 
         x = x+CACHING_INTERVAL
 
-    s = "Attempted to process " + str(N) + " papers; retrieved " + str(papers_processed) + "; total URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed."
-    print s
+    # s = "Attempted to process " + str(N) + " papers; retrieved " + str(papers_processed) + "; total URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed."
+    # print s
     # email('abecker@plos.org', subject, s)
 
 except:

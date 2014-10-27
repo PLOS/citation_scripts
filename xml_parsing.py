@@ -14,8 +14,9 @@ import requests  # the only non-native dependency here
 
 BASE_URL='http://xmlapi.richcitations.org/v0/'
 PAPER_URL='%spaper'%(BASE_URL)
-DELAY = 4 # delay between API calls on a non-200 status, in seconds
-GIVE_UP_202 = 2 # number of times to receive a 202 status before temporarily giving up
+DELAY = 0 # delay between API calls on a non-200 status, in seconds
+BATCH_DELAY_PER_PAPER = 0.9 # delay per paper between sending a batch of papers for processing and retrying the batch, in seconds
+GIVE_UP_202 = 1 # number of times to receive a 202 status before temporarily giving up
 ACTUALLY_GIVE_UP = 2 # number of times to repeat the cycle before truly giving up on a paper
 
 
@@ -67,6 +68,10 @@ def parse_XML_list(doi_list):
     retry = [i["doi"] for i in rc_list if not i["result"]] # gives us the list we need for retrying.
     rc_list = [i for i in rc_list if i["result"]] # gets rid of the Falses
     for i in range(ACTUALLY_GIVE_UP):
+        num_retries = len(retry)
+        batch_delay = BATCH_DELAY_PER_PAPER * num_retries
+        print "Waiting", batch_delay, "seconds before retrying..."
+        time.sleep(batch_delay)
         print "Retrying papers!"
         extra_list = [parse_XML(doi, retry, retrying = True, index_list = doi_list) for doi in retry[:]]
         if i < ACTUALLY_GIVE_UP - 1:
