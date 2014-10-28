@@ -67,17 +67,40 @@ def validate(rcfilename):
             return [False, (len(there), n), (uri_ratio, num_refs, False), 
                     "Some of the papers retrieved had bad JSON; " + str(len(there)) + " out of " + str(n) + 
                     ''' were successfully retrieved. Of those retrieved: fraction of references with URIs is '''
-                    + str(uri_ratio) + ',\n' + 
+                    + '\n' + str(uri_ratio) + ',\n' + 
                     "fraction of references with DOIs is " + str(doi_ratio) + '.\n']
         elif not allthere:
-            return [False, (len(there), n), (uri_ratio, num_refs),
+            return [False, (len(there), n), (uri_ratio, num_refs, True),
                     "Not all papers requested were retrieved; " + str(len(there)) + " out of " + str(n) + 
                     ''' were successfully retrieved. Of those retrieved: fraction of references with URIs is ''' 
-                    + str(uri_ratio) + ',\n' + 
+                    + '\n' + str(uri_ratio) + ',\n' + 
                     "fraction of references with DOIs is " + str(doi_ratio) + '.\n']
         else:
-            return [True, uri_ratio, num_refs,
+            return [True, (n, n), (uri_ratio, num_refs, True),
                     "Total number of references is " + str(num_refs) + ',\n',
                     "Fraction of references with URIs is " + str(uri_ratio) + ',\n',
                     "Fraction of references with DOIs is " + str(doi_ratio) + '.\n'
                     ]
+
+def multi_validate(rc_prefix, (min, max)):
+    '''Runs validation over a range of files, returns total numbers.'''
+    total = 0
+    processed = 0
+    refs = 0
+    ratio = 0
+    for i in range(min, max+1):
+        filename = rc_prefix + str(i) + ".json"
+        print "Processing " + filename + "..."
+        v = validate(filename)
+        p = v[1][0]
+        t = v[1][1]
+        rat = v[2][0]
+        ref = v[2][1]
+        total += t
+        processed += p
+        ratio = (ratio*refs + rat*ref)/(refs + ref)
+        refs += ref
+        if not v[2][2]:
+            print "Bad JSON found!"
+    return (total, processed, refs, ratio)
+
