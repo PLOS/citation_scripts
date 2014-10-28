@@ -16,7 +16,7 @@ BASE_URL='http://xmlapi.richcitations.org/v0/'
 PAPER_URL='%spaper'%(BASE_URL)
 DELAY = 0 # delay between API calls on a non-200 status, in seconds
 BATCH_DELAY_PER_PAPER = 0.9 # delay per paper between sending a batch of papers for processing and retrying the batch, in seconds
-GIVE_UP_202 = 1 # number of times to receive a 202 status before temporarily giving up
+GIVE_UP_202 = 0 # number of times to receive a 202 status before temporarily giving up
 ACTUALLY_GIVE_UP = 2 # number of times to repeat the cycle before truly giving up on a paper
 
 
@@ -32,13 +32,13 @@ def parse_XML(raw_doi, run_dois, retrying = False, index_list = None):
         i = run_dois.index(raw_doi) + 1
         n = len(run_dois)
     doi = "http://dx.doi.org/%s"%(raw_doi)
+    print "Retrieving citations from paper", i, "out of", n, "..."
     response = requests.get(PAPER_URL, params={'id': doi})
     replies_202 = 1
     while response.status_code == 202:
         if replies_202 > GIVE_UP_202:
             return {"result":False, "doi":raw_doi}
         response = requests.get(PAPER_URL, params={'id': doi})
-        print "Retrieving citations from paper", i, "out of", n, "..."
         replies_202 += 1
         time.sleep(DELAY)
     if response.status_code == 200:

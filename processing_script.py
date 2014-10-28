@@ -30,9 +30,10 @@ try:
     c = 0
     papers_processed = 0
     uri_ratio = [0, 0]  # first number is the ratio for all references processed to this point; second is the number of references processed (as opposed to the papers processed).
-
+    
+    print "Starting a run of " + str(N) + " papers."
     print "Results from this run will be deposited into " + DB_DIR + ". If that directory doesn't exist, fix that right now."
-
+    
     # text("Starting a run of " + str(N) + " papers.")
 
     while x < N-1:
@@ -72,7 +73,7 @@ try:
     
     t1 = time.time()
     dt = t1 - t0
-    s = "Attempted to process " + str(N) + " papers in " str(dt) " seconds; retrieved " + str(papers_processed) + "; total URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed."
+    s = "Attempted to process " + str(N) + " papers in " + str(dt) + " seconds; retrieved " + str(papers_processed) + "; total URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed."
     print s
     # email('abecker@plos.org', subject, s)
 
