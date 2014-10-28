@@ -12,8 +12,8 @@ from citation_validation import validate
 DOIS_FILE = "new_pone_dois.json"
 DB_DIR = "pone_dbs/"
 DB_FILE_PREFIX = DB_DIR + "pone_db_"
-N = 13000 # number of papers to process.
-OFFSET = 0 # where to start in the list of DOIs
+N = 100 # number of papers to process.
+OFFSET = 6300 # where to start in the list of DOIs
 
 CACHING_INTERVAL = 100
 
@@ -27,7 +27,7 @@ t0 = time.time()
 
 try:
     x = 0
-    c = 0
+    c = OFFSET/CACHING_INTERVAL
     papers_processed = 0
     uri_ratio = [0, 0]  # first number is the ratio for all references processed to this point; second is the number of references processed (as opposed to the papers processed).
     
@@ -47,33 +47,45 @@ try:
         dbfile.close()
 
         print "Validating results..."
-        results = validate(filename)
-        subject = "Code finished but not all papers were retrieved"
-        if results[0]:
-            print "Retrieval succeeded for all papers!"
-            subject = "Code ran successfully for all papers!"
-            papers_processed += len(runlist)
-            uri_ratio[0] = (uri_ratio[0]*uri_ratio[1] + results[1]*results[2])/(uri_ratio[1] + results[2])
-            uri_ratio[1] += results[2]
+        try:
+            results = validate(filename)
+        except:
+            subj = "Validation failed with error " + str(sys.exc_info()[0]) + "!"
+            body = "Somewhere around " + str(x) + " papers were attempted, with at least " + str(papers_processed) + " successfully processed. The last file written was " + filename + ". Error traceback follows: \n" + str(traceback.format_exc())
+            print subj, body
+            # email('abecker@plos.org', subj, body)
         else:
-            papers_processed += results[1][0]
-            uri_ratio[0] = (uri_ratio[0]*uri_ratio[1] + results[2][0]*results[2][1])/(uri_ratio[1] + results[2][1])
-            uri_ratio[1] = results[2][1]
-        for r in results[3:]:
-            print r
-        update_string = "Attempted to process " + str(x + len(runlist)) + " papers so far; retrieved " + str(papers_processed) + "; URI ratio is " + str(round(uri_ratio[0], 3)) + "."
-        print update_string
+            subject = "Code finished but not all papers were retrieved"
+            if results[0]:
+                print "Retrieval succeeded for all papers!"
+                subject = "Code ran successfully for all papers!"
+                papers_processed += len(runlist)
+                uri_ratio[0] = (uri_ratio[0]*uri_ratio[1] + results[1]*results[2])/(uri_ratio[1] + results[2])
+                uri_ratio[1] += results[2]
+            else:
+                papers_processed += results[1][0]
+                uri_ratio[0] = (uri_ratio[0]*uri_ratio[1] + results[2][0]*results[2][1])/(uri_ratio[1] + results[2][1])
+                uri_ratio[1] = results[2][1]
+                if not results[2][2]:
+                    subj = "Some badly formed JSON was returned!"
+                    body = "Somewhere around " + str(x + len(runlist)) + " papers were attempted, with at least " + str(papers_processed) + " successfully processed. The last file written was " + filename + "."
+                    print subj, body
+                    # email('abecker@plos.org', subj, body)
+            for r in results[3:]:
+                print r
+            update_string = "Attempted to process " + str(x + len(runlist)) + " papers so far; retrieved at least " + str(papers_processed) + "; URI ratio is " + str(round(uri_ratio[0], 3)) + "."
+            print update_string
 
         c += 1
 
-        # if not c%1:
+        # if not x%10000:
         #     text("Still working!" + update_string)
 
         x = x+CACHING_INTERVAL
     
     t1 = time.time()
     dt = t1 - t0
-    s = "Attempted to process " + str(N) + " papers in " + str(dt) + " seconds; retrieved " + str(papers_processed) + "; total URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed."
+    s = "Attempted to process " + str(N) + " papers in " + str(dt) + " seconds; retrieved at least " + str(papers_processed) + "; total URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed."
     print s
     # email('abecker@plos.org', subject, s)
 
