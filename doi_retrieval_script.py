@@ -3,8 +3,11 @@
 import json
 from search_and_DOI_utilities import plos_search, plos_dois
 
+
+THIS DOES NOT WORK. DO NOT RUN IT.
+
 SEARCH_JOURNAL = "PLOS ONE"
-MAX_PAPERS = 20
+MAX_PAPERS = 120000
 extra_parameters = {'journal': 'PLOS ONE'}
 
 search_results = plos_search('*', extra_parameters=extra_parameters, rows=MAX_PAPERS)
