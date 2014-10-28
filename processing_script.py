@@ -4,6 +4,7 @@
 from __future__ import division
 import json
 import traceback, sys
+import time
 from xml_parsing import parse_XML_list
 from citation_validation import validate
 # from email_alert import email, text
@@ -22,6 +23,7 @@ doifile.close()
 
 run_dois = dois[OFFSET:OFFSET+N]
 
+t0 = time.time()
 
 try:
     x = 0
@@ -67,9 +69,11 @@ try:
         #     text("Still working!" + update_string)
 
         x = x+CACHING_INTERVAL
-
-    # s = "Attempted to process " + str(N) + " papers; retrieved " + str(papers_processed) + "; total URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed."
-    # print s
+    
+    t1 = time.time()
+    dt = t1 - t0
+    s = "Attempted to process " + str(N) + " papers in " str(dt) " seconds; retrieved " + str(papers_processed) + "; total URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed."
+    print s
     # email('abecker@plos.org', subject, s)
 
 except:
