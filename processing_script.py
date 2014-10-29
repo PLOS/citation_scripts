@@ -9,11 +9,11 @@ from xml_parsing import parse_XML_list
 from citation_validation import validate, multi_validate
 from email_alert import email, text
 
-DOIS_FILE = "new_pone_dois.json"
-DB_DIR = "pone_dbs/"
-DB_FILE_PREFIX = DB_DIR + "pone_db_"
-N = 23600 # number of papers to process.
-OFFSET = 11400 # where to start in the list of DOIs
+DOIS_FILE = "final_run_plos_dois.json"
+DB_DIR = "final_dbs/"
+DB_FILE_PREFIX = DB_DIR + "final_db_"
+N = 74563 # number of papers to process.
+OFFSET = 0 # where to start in the list of DOIs
 
 CACHING_INTERVAL = 100
 
@@ -24,7 +24,7 @@ doifile.close()
 run_dois = dois[OFFSET:OFFSET+N]
 
 c = OFFSET//CACHING_INTERVAL
-tot, proc, refs, ratio = multi_validate("pone_dbs/pone_db_", (0, c-1))
+tot, proc, refs, ratio = multi_validate("pone_dbs/pone_db_", (0, 350))
 
 t0 = time.time()
 

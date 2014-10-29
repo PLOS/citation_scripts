@@ -53,9 +53,10 @@ def plos_search(query='*', query_parameters=None, extra_parameters=None, rows=20
     if isinstance(query_parameters, dict):
         query_strings = ["{0}:'{1}'".format(key, value)
                          for key, value in query_parameters.iteritems()]
+        print query_strings
     else:
         query_strings = []
-    query_dict = {'q': ' AND '.join(query_strings + [query])}
+    query_dict = {'q': ' AND '.join(query_strings)}
     query_dict.update({'fq': fq,
                        'wt': output,
                        'rows': str(rows),
@@ -69,6 +70,7 @@ def plos_search(query='*', query_parameters=None, extra_parameters=None, rows=20
     # Build the final query and post a GET request
     r = requests.get(PLOS_SEARCH_URL, params=query_dict, headers=headers)
     r.encoding = "UTF-8"  # just to be sure
+    print r.url
 
     doc_json = r.json()["response"]["docs"]
     if verbose:
