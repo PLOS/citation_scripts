@@ -66,16 +66,14 @@ def validate(rcfilename):
         if not goodjson:
             return [False, (len(there), n), (uri_ratio, num_refs, False), 
                     "Some of the papers retrieved had bad JSON; " + str(len(there)) + " out of " + str(n) + 
-                    ''' were successfully retrieved. Of those retrieved: ''' + '\n'
-                    + ''' fraction of references with URIs is '''
-                    + str(uri_ratio) + ',\n' + 
+                    ''' were successfully retrieved. Of those retrieved: fraction of references with URIs is '''
+                    + '\n' + str(uri_ratio) + ',\n' + 
                     "fraction of references with DOIs is " + str(doi_ratio) + '.\n']
         elif not allthere:
             return [False, (len(there), n), (uri_ratio, num_refs, True),
                     "Not all papers requested were retrieved; " + str(len(there)) + " out of " + str(n) + 
-                    ''' were successfully retrieved. Of those retrieved:''' + '\n' 
-                    + '''fraction of references with URIs is ''' 
-                    + str(uri_ratio) + ',\n' + 
+                    ''' were successfully retrieved. Of those retrieved: fraction of references with URIs is ''' 
+                    + '\n' + str(uri_ratio) + ',\n' + 
                     "fraction of references with DOIs is " + str(doi_ratio) + '.\n']
         else:
             return [True, (n, n), (uri_ratio, num_refs, True),

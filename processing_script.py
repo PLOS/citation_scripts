@@ -12,8 +12,8 @@ from email_alert import email, text
 DOIS_FILE = "new_pone_dois.json"
 DB_DIR = "pone_dbs/"
 DB_FILE_PREFIX = DB_DIR + "pone_db_"
-N = 23600 # number of papers to process.
-OFFSET = 11400 # where to start in the list of DOIs
+N = 5000 # number of papers to process.
+OFFSET = 6600 # where to start in the list of DOIs
 
 CACHING_INTERVAL = 100
 
@@ -23,20 +23,20 @@ doifile.close()
 
 run_dois = dois[OFFSET:OFFSET+N]
 
-c = OFFSET//CACHING_INTERVAL
-tot, proc, refs, ratio = multi_validate("pone_dbs/pone_db_", (0, c-1))
-
 t0 = time.time()
+
+tot, proc, refs, ratio = multi_validate("pone_dbs/pone_db_", (0, 65))
 
 try:
     x = 0
+    c = OFFSET//CACHING_INTERVAL
     papers_processed = 0 + proc
     uri_ratio = [0 + ratio, 0 + refs]  # first number is the ratio for all references processed to this point; second is the number of references processed (as opposed to the papers processed).
-    print "Previously attempted to process " + str(tot) + " papers so far; retrieved at least " + str(papers_processed) + "; URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed thus far."
+    
     print "Starting a run of " + str(N) + " papers."
     print "Results from this run will be deposited into " + DB_DIR + ". If that directory doesn't exist, fix that right now."
     
-    text("Starting a run of " + str(N) + " papers.")
+    # text("Starting a run of " + str(N) + " papers.")
 
     while x < N-1:
         runlist = run_dois[x:x+CACHING_INTERVAL]
@@ -73,7 +73,7 @@ try:
                 print subj, body
                 email('abecker@plos.org', subj, body)
             uri_ratio[0] = (uri_ratio[0]*uri_ratio[1] + results[2][0]*results[2][1])/(uri_ratio[1] + results[2][1])
-            uri_ratio[1] += results[2][1]
+            uri_ratio[1] = results[2][1]
             # if not results[2][2]:
             #     subj = "Some badly formed JSON was returned!"
             #     body = "Somewhere around " + str(x + len(runlist)) + " papers were attempted, with at least " + str(papers_processed) + " successfully processed. The last file written was " + filename + "."
@@ -81,13 +81,13 @@ try:
             #     email('abecker@plos.org', subj, body)
             for r in results[3:]:
                 print r
-            update_string = "Attempted to process " + str(x + len(runlist) + tot) + " papers so far; retrieved at least " + str(papers_processed) + "; URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed."
+            update_string = "Attempted to process " + str(x + len(runlist) + tot) + " papers so far; retrieved at least " + str(papers_processed) + "; URI ratio is " + str(round(uri_ratio[0], 3)) + "."
             print update_string
 
         c += 1
 
-        if not c%100:
-            text("Still working!" + update_string)
+        # if not c%100:
+        #     text("Still working!" + update_string)
 
         x = x+CACHING_INTERVAL
     
