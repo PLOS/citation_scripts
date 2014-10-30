@@ -25,7 +25,7 @@ doifile.close()
 run_dois = dois[OFFSET:OFFSET+N]
 
 c = OFFSET//CACHING_INTERVAL
-tot, proc, refs, ratio, l, cm = multi_validate("final_dbs/final_db_", (0, c-1))
+tot, proc, refs, ratio, l, cm, er = multi_validate("final_dbs/final_db_", (0, c-1))
 # tot, proc, refs, ratio = PREV_PROCESSED, PREV_PROCESSED, 0, 0
 
 t0 = time.time()

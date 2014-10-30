@@ -22,6 +22,7 @@ def validate(rcfilename):
     dois = []
     licenses = []
     crossmarks = []
+    emptyrefs = 0
     try:
         ref_lists = [p["references"] for p in t]
     except KeyError:
@@ -41,9 +42,15 @@ def validate(rcfilename):
         t = there
         ref_lists = [p["references"] for p in t]
     finally:
+        papers_retrieved = len(there)
     # for paper in t:
     #     refs = paper["references"]
         for refs in ref_lists:
+            if len(refs) == 0:
+                print "Paper with empty references!"
+                emptyrefs += 1
+                allthere = False
+                papers_retrieved -= 1
             for ref in refs:
                 try:
                     uri = ref["uri"]
@@ -78,21 +85,21 @@ def validate(rcfilename):
         uri_ratio = len(filter(None, uris))/num_refs
         doi_ratio = len(dois)/num_refs
         if not goodjson:
-            return [False, (len(there), n), (uri_ratio, num_refs, False, licenses, crossmarks), 
+            return [False, (papers_retrieved, n), (uri_ratio, num_refs, False, licenses, crossmarks, emptyrefs), 
                     "Some of the papers retrieved had bad JSON; " + str(len(there)) + " out of " + str(n) + 
                     ''' were successfully retrieved. Of those retrieved: ''' + '\n'
                     + ''' fraction of references with URIs is '''
                     + str(uri_ratio) + ',\n' + 
                     "fraction of references with DOIs is " + str(doi_ratio) + '.\n']
         elif not allthere:
-            return [False, (len(there), n), (uri_ratio, num_refs, True, licenses, crossmarks),
+            return [False, (papers_retrieved, n), (uri_ratio, num_refs, True, licenses, crossmarks, emptyrefs),
                     "Not all papers requested were retrieved; " + str(len(there)) + " out of " + str(n) + 
                     ''' were successfully retrieved. Of those retrieved:''' + '\n' 
                     + '''fraction of references with URIs is ''' 
                     + str(uri_ratio) + ',\n' + 
                     "fraction of references with DOIs is " + str(doi_ratio) + '.\n']
         else:
-            return [True, (n, n), (uri_ratio, num_refs, True, licenses, crossmarks),
+            return [True, (n, n), (uri_ratio, num_refs, True, licenses, crossmarks, emptyrefs),
                     "Total number of references is " + str(num_refs) + ',\n',
                     "Fraction of references with URIs is " + str(uri_ratio) + ',\n',
                     "Fraction of references with DOIs is " + str(doi_ratio) + '.\n'
@@ -106,6 +113,7 @@ def multi_validate(rc_prefix, (min, max)):
     ratio = 0
     crossmarks = 0
     licenses = 0
+    emptyrefs = 0
     for i in range(min, max+1):
         filename = rc_prefix + str(i) + ".json"
         print "Processing " + filename + "..."
@@ -122,5 +130,6 @@ def multi_validate(rc_prefix, (min, max)):
             print "Bad JSON found!"
         licenses += len(filter(None, v[2][3]))
         crossmarks += len(filter(None, v[2][4]))
-    return (total, processed, refs, ratio, licenses, crossmarks)
+        emptyrefs += v[2][5]
+    return (total, processed, refs, ratio, licenses, crossmarks, emptyrefs)
 
