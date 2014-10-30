@@ -34,7 +34,11 @@ def parse_XML(raw_doi, run_dois, retrying = False, index_list = None):
         n = len(run_dois)
     doi = "http://dx.doi.org/%s"%(raw_doi)
     print "Requesting citations for paper", i, "out of", n, "..."
-    response = requests.get(PAPER_URL, params={'id': doi})
+    try:
+        response = requests.get(PAPER_URL, params={'id': doi})
+    except ConnectionError:
+        print "Problem with the connection. We'll try that one again later."
+        return {"result":False, "doi":raw_doi}
     replies_202 = 1
     while response.status_code == 202:
         if replies_202 > GIVE_UP_202:
