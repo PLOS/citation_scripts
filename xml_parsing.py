@@ -36,7 +36,7 @@ def parse_XML(raw_doi, run_dois, retrying = False, index_list = None):
     print "Requesting citations for paper", i, "out of", n, "..."
     try:
         response = requests.get(PAPER_URL, params={'id': doi})
-    except ConnectionError:
+    except requests.exceptions.ConnectionError:
         print "Problem with the connection. We'll try that one again later."
         return {"result":False, "doi":raw_doi}
     replies_202 = 1

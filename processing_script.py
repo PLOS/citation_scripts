@@ -12,8 +12,8 @@ from email_alert import email, text
 DOIS_FILE = "final_run_plos_dois.json"
 DB_DIR = "final_dbs/"
 DB_FILE_PREFIX = DB_DIR + "final_db_"
-N = 73031 # number of papers to process.
-OFFSET = 19000 # where to start in the list of DOIs
+N = 47631 # number of papers to process.
+OFFSET = 25400 # where to start in the list of DOIs
 # PREV_PROCESSED = 51324
 
 CACHING_INTERVAL = 100
@@ -25,7 +25,7 @@ doifile.close()
 run_dois = dois[OFFSET:OFFSET+N]
 
 c = OFFSET//CACHING_INTERVAL
-tot, proc, refs, ratio = multi_validate("final_dbs/final_db_", (0, c-1))
+tot, proc, refs, ratio, l, cm = multi_validate("final_dbs/final_db_", (0, c-1))
 # tot, proc, refs, ratio = PREV_PROCESSED, PREV_PROCESSED, 0, 0
 
 t0 = time.time()
