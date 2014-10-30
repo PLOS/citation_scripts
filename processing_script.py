@@ -26,7 +26,7 @@ run_dois = dois[OFFSET:OFFSET+N]
 
 c = OFFSET//CACHING_INTERVAL
 # tot, proc, refs, ratio = multi_validate("pone_dbs/pone_db_", (0, 350))
-tot, proc = PREV_PROCESSED, PREV_PROCESSED
+tot, proc, refs, ratio = PREV_PROCESSED, PREV_PROCESSED, 0, 0
 
 t0 = time.time()
 
