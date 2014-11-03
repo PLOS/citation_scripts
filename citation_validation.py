@@ -2,6 +2,7 @@
 
 from __future__ import division
 import json
+import re
 
 def validate(rcfilename):
     '''Runs several tests over the rich citation JSON contained within the given file.'''
@@ -23,6 +24,7 @@ def validate(rcfilename):
     licenses = []
     crossmarks = []
     emptyrefs = 0
+    badtitles = []
     try:
         ref_lists = [p["references"] for p in t]
     except KeyError:
@@ -58,6 +60,24 @@ def validate(rcfilename):
                     try:
                         i = uri.index("dx.doi.org")
                         dois.append(uri)
+                        try:
+                            title = ref["bibliographic"]["title"]
+                        except KeyError:
+                            print "Bad JSON found in references!"
+                            badtitles.append(ref)
+                            # pass
+                        else:
+                            try:
+                                test_title = re.escape(re.sub(r"\W+", "", title)) # Remove non-alphanumerics
+                                test_original = re.sub("<.*?>", "", ref["original_citation"]) # remove HTML tags
+                                test_original = re.sub(r"\W+", "", test_original) # Remove non-alphanumerics
+                                match = re.search(test_title, test_original, re.IGNORECASE) # look for case-insensitive match
+                                if not match:
+                                    badtitles.append(ref)
+                            except KeyError:
+                                print "Bad JSON found in references!"
+                                badtitles.append(ref)
+                                # pass
                     except ValueError:
                         pass
                 # for pair in [(uris, ["uri_type"]), (sources, ["uri_source"]), (titles, ['bibliographic', 'title'])]:
@@ -81,25 +101,27 @@ def validate(rcfilename):
                     crossmarks.append(None)
 
 
+
+
         num_refs = len(uris)
         uri_ratio = len(filter(None, uris))/num_refs
         doi_ratio = len(dois)/num_refs
         if not goodjson:
-            return [False, (papers_retrieved, n), (uri_ratio, num_refs, False, licenses, crossmarks, emptyrefs), 
+            return [False, (papers_retrieved, n), (uri_ratio, num_refs, False, licenses, crossmarks, emptyrefs, badtitles), 
                     "Some of the papers retrieved had bad JSON; " + str(len(there)) + " out of " + str(n) + 
                     ''' were successfully retrieved. Of those retrieved: ''' + '\n'
                     + ''' fraction of references with URIs is '''
                     + str(uri_ratio) + ',\n' + 
                     "fraction of references with DOIs is " + str(doi_ratio) + '.\n']
         elif not allthere:
-            return [False, (papers_retrieved, n), (uri_ratio, num_refs, True, licenses, crossmarks, emptyrefs),
+            return [False, (papers_retrieved, n), (uri_ratio, num_refs, True, licenses, crossmarks, emptyrefs, badtitles),
                     "Not all papers requested were retrieved; " + str(len(there)) + " out of " + str(n) + 
                     ''' were successfully retrieved. Of those retrieved:''' + '\n' 
                     + '''fraction of references with URIs is ''' 
                     + str(uri_ratio) + ',\n' + 
                     "fraction of references with DOIs is " + str(doi_ratio) + '.\n']
         else:
-            return [True, (n, n), (uri_ratio, num_refs, True, licenses, crossmarks, emptyrefs),
+            return [True, (n, n), (uri_ratio, num_refs, True, licenses, crossmarks, emptyrefs, badtitles),
                     "Total number of references is " + str(num_refs) + ',\n',
                     "Fraction of references with URIs is " + str(uri_ratio) + ',\n',
                     "Fraction of references with DOIs is " + str(doi_ratio) + '.\n'
@@ -114,6 +136,7 @@ def multi_validate(rc_prefix, (min, max)):
     crossmarks = 0
     licenses = 0
     emptyrefs = 0
+    badtitles = 0
     for i in range(min, max+1):
         filename = rc_prefix + str(i) + ".json"
         print "Processing " + filename + "..."
@@ -131,5 +154,6 @@ def multi_validate(rc_prefix, (min, max)):
         licenses += len(filter(None, v[2][3]))
         crossmarks += len(filter(None, v[2][4]))
         emptyrefs += v[2][5]
-    return (total, processed, refs, ratio, licenses, crossmarks, emptyrefs)
+        badtitles += len(v[2][6])
+    return (total, processed, refs, ratio, licenses, crossmarks, emptyrefs, badtitles)
 
