@@ -7,12 +7,12 @@ import traceback, sys
 import time
 from xml_parsing import parse_XML_list
 from citation_validation import validate, multi_validate
-# from email_alert import email, text
+from email_alert import email, text
 
-DOIS_FILE = "pbio_dois.json"
-DB_DIR = "pbio_dbs/"
-DB_FILE_PREFIX = DB_DIR + "pbio_db_"
-N = 1942 # number of papers to process.
+DOIS_FILE = "all_plos_dois_2014_10_29.json"
+DB_DIR = "plos_dbs/"
+DB_FILE_PREFIX = DB_DIR + "plos_db_"
+N = 126265 # number of papers to process.
 OFFSET = 0 # where to start in the list of DOIs
 PREV_PROCESSED = 0
 
@@ -38,7 +38,7 @@ try:
     print "Starting a run of " + str(N) + " papers."
     print "Results from this run will be deposited into " + DB_DIR + ". If that directory doesn't exist, fix that right now."
     
-    # text("Starting a run of " + str(N) + " papers.")
+    text("Starting a run of " + str(N) + " papers.")
 
     while x < N-1:
         runlist = run_dois[x:x+CACHING_INTERVAL]
@@ -57,7 +57,7 @@ try:
             subj = "Validation failed with error " + str(sys.exc_info()[0]) + "!"
             body = "Somewhere around " + str(x) + " papers were attempted, with at least " + str(papers_processed) + " successfully processed. The last file written was " + filename + ". Error traceback follows: \n" + str(traceback.format_exc())
             print subj, body
-            # email('abecker@plos.org', subj, body)
+            email('abecker@plos.org', subj, body)
         else:
             subject = "Code finished but not all papers were retrieved"
             papers_processed += results[1][0]
@@ -68,7 +68,7 @@ try:
                 subj = "Some badly formed JSON was returned!"
                 body = "Somewhere around " + str(x + len(runlist)) + " papers were attempted, with at least " + str(papers_processed) + " successfully processed. The last file written was " + filename + "."
                 print subj, body
-                # email('abecker@plos.org', subj, body)
+                email('abecker@plos.org', subj, body)
             uri_ratio[0] = (uri_ratio[0]*uri_ratio[1] + results[2][0]*results[2][1])/(uri_ratio[1] + results[2][1])
             uri_ratio[1] += results[2][1]
             for r in results[3:]:
@@ -78,8 +78,8 @@ try:
 
         c += 1
 
-        # if not c%100:
-        #     text("Still working!" + update_string)
+        if not c%300:
+            text("Still working!" + update_string)
 
         x = x+CACHING_INTERVAL
     
@@ -87,14 +87,14 @@ try:
     dt = t1 - t0
     s = "Attempted to process " + str(N) + " papers in " + str(dt) + " seconds; retrieved at least " + str(papers_processed - proc) + "; total URI ratio is " + str(round(uri_ratio[0], 3)) + " for " + str(uri_ratio[1]) + " end-of-paper references processed."
     print s
-    # email('abecker@plos.org', subject, s)
+    email('abecker@plos.org', subject, s)
 
 except:
     print "Whoops, code stopped because of an error!"
     e = "Somewhere around " + str(x + tot) + " papers were attempted, with at least " + str(papers_processed) + " successfully processed."
     print e
-    # email('abecker@plos.org',
-    #         "Code failed with error " + str(sys.exc_info()[0]) + "!",
-    #         e + " Error traceback follows: \n" + str(traceback.format_exc())
-    #         )
+    email('abecker@plos.org',
+            "Code failed with error " + str(sys.exc_info()[0]) + "!",
+            e + " Error traceback follows: \n" + str(traceback.format_exc())
+            )
     raise

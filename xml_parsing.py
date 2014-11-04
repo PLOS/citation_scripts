@@ -16,9 +16,9 @@ import requests  # the only non-native dependency here
 BASE_URL='http://xmlapi.richcitations.org/v0/'
 PAPER_URL='%spaper'%(BASE_URL)
 DELAY = 0 # delay between API calls on a non-200 status, in seconds
-BATCH_DELAY_PER_PAPER = 1.2 # delay per paper between sending a batch of papers for processing and retrying the batch, in seconds
+BATCH_DELAY_PER_PAPER = 0.01 # delay per paper between sending a batch of papers for processing and retrying the batch, in seconds
 GIVE_UP_202 = 0 # number of times to receive a 202 status before temporarily giving up
-ACTUALLY_GIVE_UP = 2 # number of times to repeat the cycle before truly giving up on a paper
+ACTUALLY_GIVE_UP = 1 # number of times to repeat the cycle before truly giving up on a paper
 
 
 def parse_XML(raw_doi, run_dois, retrying = False, index_list = None):
@@ -58,8 +58,9 @@ def parse_XML(raw_doi, run_dois, retrying = False, index_list = None):
         return {"result":parsed, "doi":raw_doi}
     else:
         print response
-        return {"result":False, "doi":raw_doi}
         time.sleep(DELAY) # to give the APIs (ours, CrossRef's) some time before we hit them again when they're having problems.
+        return {"result":False, "doi":raw_doi}
+
 
 
 class XMLParser(object):

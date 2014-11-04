@@ -14,7 +14,7 @@ def validate(rcfilename):
     allthere = True
     goodjson = True # innocent until proven guilty
     there = filter(None, t)
-    n = len(t)
+    n = len(raw)
     if len(there) != len(t):
         allthere = False
         t = there
@@ -156,4 +156,32 @@ def multi_validate(rc_prefix, (min, max)):
         emptyrefs += v[2][5]
         badtitles += len(v[2][6])
     return (total, processed, refs, ratio, licenses, crossmarks, emptyrefs, badtitles)
+
+def not_processed(rc_prefix, (min, max)):
+    '''Returns a list of DOIs which were not processed for a range of files, returns total numbers.'''
+    total = 0
+    processed = 0
+    notprocessed = []
+    for i in range(min, max+1):
+        filename = rc_prefix + str(i) + ".json"
+        print "Processing " + filename + "..."
+        with open(filename) as f:
+            raw = json.load(f)
+        total += len(raw)
+        # missed = [a["doi"] for a in raw if not a["result"]]
+        # there = [a for a in raw if a["result"]]
+        refkeyset = set([u'citation_groups', 
+                u'word_count', 
+                u'references', 
+                u'uri', 
+                u'bibliographic', 
+                u'updated_by'
+                ])
+        there = [a for a in raw if a["result"] and set(a["result"].keys()) == refkeyset and len(a["result"]["references"]) != 0] # boolean short circuit!
+        # theredois = {a["doi"] for a in there}
+        notthere = [a["doi"] for a in raw if a not in there]
+        processed += len(there)
+        notprocessed.extend(notthere)
+    print processed, "papers processed out of", total, "total;", len(notprocessed), "papers remaining."
+    return notprocessed
 
