@@ -100,12 +100,14 @@ def validate(rcfilename):
                 except KeyError:
                     crossmarks.append(None)
 
-
-
-
         num_refs = len(uris)
-        uri_ratio = len(filter(None, uris))/num_refs
-        doi_ratio = len(dois)/num_refs
+        try:
+            uri_ratio = len(filter(None, uris))/num_refs
+            doi_ratio = len(dois)/num_refs
+        except ZeroDivisionError:
+            uri_ratio = 0
+            doi_ratio = 0
+
         if not goodjson:
             return [False, (papers_retrieved, n), (uri_ratio, num_refs, False, licenses, crossmarks, emptyrefs, badtitles), 
                     "Some of the papers retrieved had bad JSON; " + str(len(there)) + " out of " + str(n) + 
@@ -147,7 +149,10 @@ def multi_validate(rc_prefix, (min, max)):
         ref = v[2][1]
         total += t
         processed += p
-        ratio = (ratio*refs + rat*ref)/(refs + ref)
+        try:
+            ratio = (ratio*refs + rat*ref)/(refs + ref)
+        except ZeroDivisionError:
+            ratio = 0
         refs += ref
         if not v[2][2]:
             print "Bad JSON found!"
@@ -157,7 +162,7 @@ def multi_validate(rc_prefix, (min, max)):
         badtitles += len(v[2][6])
     return (total, processed, refs, ratio, licenses, crossmarks, emptyrefs, badtitles)
 
-def not_processed(rc_prefix, (min, max)):
+def not_processed(rc_prefix, (min, max), keepemptyrefs = False):
     '''Returns a list of DOIs which were not processed for a range of files, returns total numbers.'''
     total = 0
     processed = 0
@@ -177,7 +182,10 @@ def not_processed(rc_prefix, (min, max)):
                 u'bibliographic', 
                 u'updated_by'
                 ])
-        there = [a for a in raw if a["result"] and set(a["result"].keys()) == refkeyset and len(a["result"]["references"]) != 0] # boolean short circuit!
+        if not keepemptyrefs:
+            there = [a for a in raw if a["result"] and set(a["result"].keys()) == refkeyset and len(a["result"]["references"]) != 0] # boolean short circuit!
+        else:
+            there = [a for a in raw if a["result"] and set(a["result"].keys()) == refkeyset] # boolean short circuit!
         # theredois = {a["doi"] for a in there}
         notthere = [a["doi"] for a in raw if a not in there]
         processed += len(there)
